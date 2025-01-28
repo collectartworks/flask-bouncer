@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_bouncer import Bouncer, ensure, can, requires
 from bouncer.constants import *
-from nose.tools import *
 from .models import Article, TopSecretFile, User
 from .helpers import user_set
 
@@ -68,34 +67,34 @@ def test_default():
     jonathan = User(name='jonathan', admin=False)
     with user_set(app, jonathan):
         resp = client.get('/')
-        eq_(b"Hello World", resp.data)
+        assert b"Hello World" == resp.data
 
 def test_allowed_index():
     jonathan = User(name='jonathan', admin=False)
     with user_set(app, jonathan):
         resp = client.get('/articles')
-        eq_(b"A bunch of articles", resp.data)
+        assert b"A bunch of articles" == resp.data
 
 def test_not_allowed_index():
     doug = User(name='doug', admin=False)
     with user_set(app, doug):
         resp = client.get('/topsecret')
-        eq_(resp.status_code, 403)
+        assert resp.status_code == 403
 
 def test_securing_specific_object():
     doug = User(name='doug', admin=False)
     with user_set(app, doug):
         resp = client.post('/article/1')
-        eq_(resp.status_code, 403)
+        assert resp.status_code == 403
 
 def test_no_custom_content_for_unauthorized_user():
     doug = User(name='doug', admin=False)
     with user_set(app, doug):
         resp = client.get('/article/1')
-        eq_(b"Look at this pretty article", resp.data)
+        assert b"Look at this pretty article" == resp.data
 
 def test_custom_content_for_authorized_user():
     mary = User(id=1000, name='mary', admin=False)
     with user_set(app, mary):
         resp = client.get('/article/1')
-        eq_(b"Click here to edit this article", resp.data)
+        assert b"Click here to edit this article" == resp.data

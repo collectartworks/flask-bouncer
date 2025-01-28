@@ -1,12 +1,12 @@
+import pytest
 from flask import Flask
 from flask_bouncer import Bouncer, requires, skip_authorization, ensure
 from werkzeug.exceptions import Forbidden
 from bouncer.constants import *
-from nose.tools import *
 from .models import Article, User
 from .helpers import user_set
 
-@raises(Forbidden)
+
 def test_lock_it_down_raise_exception():
 
     app = Flask("test_lock_it_down_raise_exception")
@@ -26,7 +26,8 @@ def test_lock_it_down_raise_exception():
 
     jonathan = User(name='jonathan', admin=False)
     with user_set(app, jonathan):
-        resp = client.get('/articles')
+        with pytest.raises(Forbidden):
+            resp = client.get('/articles')
 
 
 def test_ensure_and_requires_while_locked_down():
@@ -63,10 +64,10 @@ def test_ensure_and_requires_while_locked_down():
     jonathan = User(name='jonathan', admin=False, id=1)
     with user_set(app, jonathan):
         resp = client.get('/articles')
-        eq_(b"A bunch of articles", resp.data)
+        assert b"A bunch of articles" == resp.data
 
         resp = client.post('/article/1')
-        eq_(b"successfully edited post", resp.data)
+        assert b"successfully edited post" == resp.data
 
 
 def test_bypass_route():
@@ -90,4 +91,4 @@ def test_bypass_route():
     jonathan = User(name='jonathan', admin=False)
     with user_set(app, jonathan):
         resp = client.get('/articles')
-        eq_(b"A bunch of articles", resp.data)
+        assert b"A bunch of articles" == resp.data
