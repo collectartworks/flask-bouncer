@@ -1,3 +1,8 @@
+Version 0.4.2
+-------------
+- Add Flask 3.0 support
+- Replace nose with pytest
+
 Version 0.3.0
 -------------
 
